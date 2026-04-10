@@ -1,0 +1,13 @@
+[package]
+name = "flux-vm"
+version.workspace = true
+edition.workspace = true
+description = "FLUX virtual machine: register file, memory, interpreter"
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+flux-bytecode = { path = "../flux-bytecode" }
+thiserror.workspace = true
+
+[dev-dependencies]

@@ -1,0 +1,9 @@
+[package]
+name = "flux-fir"
+version.workspace = true
+edition.workspace = true
+description = "FLUX FIR: SSA intermediate representation"
+license.workspace = true
+
+[dependencies]
+thiserror.workspace = true

@@ -1,0 +1,10 @@
+[package]
+name = "flux-parser"
+version.workspace = true
+edition.workspace = true
+description = "FLUX.MD parser: structured markdown to AST"
+license.workspace = true
+
+[dependencies]
+flux-fir = { path = "../flux-fir" }
+thiserror.workspace = true

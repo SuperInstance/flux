@@ -1,0 +1,12 @@
+[package]
+name = "flux-bytecode"
+version = "0.1.0"
+edition = "2021"
+description = "FLUX bytecode: opcodes, encoder, decoder, validator"
+license = "MIT"
+rust-version = "1.75"
+
+[dependencies]
+thiserror = "2"
+
+[dev-dependencies]

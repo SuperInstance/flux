@@ -1,0 +1,22 @@
+# Build artifacts
+/target/
+**/*.rlib
+**/*.rmeta
+**/*.d
+
+# Cargo
+Cargo.lock
+
+# Editor backups
+**/*.rs.bk
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
