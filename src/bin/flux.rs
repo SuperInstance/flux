@@ -21,6 +21,7 @@ fn main() {
 
     match args[1].as_str() {
         "version" | "-v" | "--version" => cmd_version(),
+        "hello" => cmd_hello(),
         "compile" | "c" => cmd_compile(&args[2..]),
         "run" | "r" => cmd_run(&args[2..]),
         "info" => cmd_info(),
@@ -186,6 +187,81 @@ fn cmd_info() {
     println!();
 }
 
+fn cmd_hello() {
+    println!();
+    println!("  \x1b[1;35m{:=<64}\x1b[0m", "");
+    println!("  \x1b[1;35m  FLUX Hello World — Rust Edition\x1b[0m");
+    println!("  \x1b[1;35m{:=<64}\x1b[0m", "");
+    println!();
+    println!("  \x1b[96mWelcome to the FLUX Virtual Machine!\x1b[0m");
+    println!("  \x1b[2mLet's compute: 3 + 4 = 7\x1b[0m");
+    println!();
+
+    // Build bytecode: IInc R0, 3; IInc R1, 4; IAdd R0, R0, R1; Halt
+    let instrs = [
+        Instruction::reg(Op::IMov, 0, ZERO_REG), // R0 = 0
+        Instruction::imm(Op::IInc, 0, 3),          // R0 = 3
+        Instruction::reg(Op::IMov, 1, ZERO_REG),   // R1 = 0
+        Instruction::imm(Op::IInc, 1, 4),           // R1 = 4
+        Instruction::reg_ty(Op::IAdd, 0, 0, 1),    // R0 = R0 + R1
+        Instruction::nullary(Op::Halt),
+    ];
+
+    let mut enc = BytecodeEncoder::new();
+    for instr in &instrs {
+        enc.emit(instr).unwrap();
+    }
+    let bytecode = enc.into_bytes();
+
+    println!("  \x1b[90m1. Bytecode Generation\x1b[0m");
+    println!("     Source:  3 + 4 = 7");
+    println!("     Opcodes: IMov R0,0 | IInc R0,3 | IMov R1,0 | IInc R1,4 | IAdd R0,R0,R1 | HALT");
+    println!("     Bytes:   {} bytes", bytecode.len());
+    println!();
+
+    println!("  \x1b[90m2. Execution\x1b[0m");
+
+    let config = VmConfig {
+        trace_enabled: true,
+        max_cycles: 1000,
+        ..VmConfig::default()
+    };
+
+    let mut vm = Interpreter::new(&bytecode, config).unwrap();
+    match vm.execute() {
+        Ok(cycles) => {
+            let r0 = vm.regs.read_gp(0);
+            let r1 = vm.regs.read_gp(1);
+            println!("     VM state:");
+            println!("       R0 = {}  \x1b[90m(expected: 7)\x1b[0m", r0);
+            println!("       R1 = {}  \x1b[90m(expected: 4)\x1b[0m", r1);
+            println!("       Cycles: {}", cycles);
+            println!("       Halted: true");
+            println!();
+
+            println!("  \x1b[90m3. FLUX Architecture\x1b[0m");
+            println!("     ├─ 64-register file (16 GP + 16 FP + 16 VEC + 16 SYS)");
+            println!("     ├─ {} opcodes across 10 categories", Op::count());
+            println!("     ├─ 6 encoding formats (A/B/C/D/E/G)");
+            println!("     ├─ Zero-copy bytecode loading");
+            println!("     └─ Region-based memory manager");
+            println!();
+
+            if r0 == 7 {
+                println!("  \x1b[32;1m✓ Success! 3 + 4 = 7 — confirmed by the FLUX Rust VM\x1b[0m");
+            } else {
+                println!("  \x1b[33m⚠ Result was {}, expected 7\x1b[0m", r0);
+            }
+        }
+        Err(e) => {
+            eprintln!("  \x1b[31merror:\x1b[0m {}", e);
+        }
+    }
+    println!();
+    println!("  \x1b[2mGitHub: https://github.com/SuperInstance/flux\x1b[0m");
+    println!();
+}
+
 fn cmd_demo() {
     println!();
     println!("  \x1b[1;36mFLUX Demo\x1b[0m \x1b[2m— Computing 42 = 10 + 32\x1b[0m");
@@ -300,6 +376,7 @@ fn print_usage() {
     println!("    flux <COMMAND> [ARGS]");
     println!();
     println!("  \x1b[1mCOMMANDS:\x1b[0m");
+    println!("    \x1b[36mhello\x1b[0m             Run the FLUX hello world demo");
     println!("    \x1b[36mrun\x1b[0m       \x1b[90m<r>\x1b[0m    Execute a .bin bytecode file");
     println!("    \x1b[36mcompile\x1b[0m   \x1b[90m<c>\x1b[0m    Compile a .c file to .bin bytecode");
     println!("    \x1b[36mdemo\x1b[0m              Run a built-in demonstration program");
@@ -307,11 +384,19 @@ fn print_usage() {
     println!("    \x1b[36mversion\x1b[0m    \x1b[90m<-v>\x1b[0m    Show version and build info");
     println!("    \x1b[36mhelp\x1b[0m      \x1b[90m<-h>\x1b[0m    Show this help message");
     println!();
+    println!("  \x1b[1mQUICK START:\x1b[0m");
+    println!("    flux hello              Run the hello world demo");
+    println!("    flux compile file.c -o out.bin  Compile to bytecode");
+    println!("    flux run out.bin              Run bytecode in the VM");
+    println!();
     println!("  \x1b[1mEXAMPLES:\x1b[0m");
+    println!("    flux hello");
     println!("    flux compile demo.c");
     println!("    flux run demo.bin");
     println!("    flux demo");
     println!("    flux info");
+    println!();
+    println!("  \x1b[2mPython sibling: https://github.com/SuperInstance/flux-runtime\x1b[0m");
     println!();
 }
 

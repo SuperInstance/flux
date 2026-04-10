@@ -48,4 +48,16 @@ All notable changes to the FLUX runtime will be documented in this file.
 - `flux demo` — built-in demonstration program with trace output
 - `flux info` — subsystem overview with formatted table
 - `flux version` — version and build information
+- `flux hello` — self-contained hello world demo (3+4=7)
 - Beautiful ASCII art banner with ANSI color output
+- Quick start section in help text
+
+## [0.1.1] - 2026-04-10
+
+### Added
+- `flux hello` command — self-contained VM demo with architecture overview
+- Quick start section in help text with link to Python sibling repo
+- 0 unsafe blocks, Send+Sync VM
+
+### Changed
+- Updated README with cross-references to Python runtime

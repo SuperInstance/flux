@@ -41,6 +41,9 @@ cargo build --release
 # Run tests
 cargo test
 
+# Run the hello world demo
+cargo run --bin flux -- hello
+
 # Show the banner
 cargo run --bin flux
 
